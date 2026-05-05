@@ -2,8 +2,8 @@
 =============================================================
   PRECISION PARKING — MSU CS Project  (HARD MODE v2)
 =============================================================
-  Authors : [Your Name] & Ezekiel [Last Name]
-  Course  : [Course Name]
+  Authors : Ezekiel Deravil, Ryan Dominguez, & Mia Beltre
+  Course  : CSIT 114
   Date    : 2026
 
   HOW TO INSTALL PYGAME:
@@ -166,9 +166,11 @@ class PlayerCar:
             self.speed = 0.0
 
     def get_rect(self):
+      shrink = 10
         return pygame.Rect(int(self.x - self.WIDTH  // 2),
                            int(self.y - self.HEIGHT // 2),
-                           self.WIDTH, self.HEIGHT)
+                           self.WIDTH - shrink
+                           self.HEIGHT - shrink)
 
     def draw(self, surf):
         """
@@ -626,6 +628,8 @@ class Game:
         self.transition_t    = 0.0
         self.crash_flash     = 0.0
         self.tick_played     = False
+        self.screen_shake = 0.0
+        self.best_times = [None] * len(self.levels)
 
     @property
     def current_level(self):
@@ -655,9 +659,17 @@ class Game:
         self.crash_flash    = 0.7
         SFX_CRASH.play()
         self.state = "LOSE"
+        # Shakes the screen when the car crashes
+        self.screen_shake = 12
 
     def next_level(self):
         SFX_WIN.play()
+        current_time = self.elapsed
+      best = self.best_times[self.level_index]
+
+      if best is None or current_time < best:
+        self.best_times[self.level_index] = current_time
+        
         self.level_index += 1
         if self.level_index >= len(self.levels):
             self.state = "WIN"
@@ -683,6 +695,8 @@ class Game:
             if self.transition_t <= 0:
                 self.start_level()
         self.crash_flash = max(0.0, self.crash_flash - dt)
+
+        self.screen_shake = max(0, self.screen_shale - dt * 20)
 
     def _update_playing(self, dt, keys):
         lvl       = self.current_level
@@ -712,6 +726,10 @@ class Game:
     # ── Draw ─────────────────────────────────────────────
     def draw(self):
         screen.fill(C_BG)
+        # Screen Shake
+        offset_x = int(random.uniform(-self.screen_shake, self.screen_shake))
+        offset_y = int(randome.uniform(-self.screen_shake, self.screen_shake))
+      
         if   self.state == "START":            self._draw_start()
         elif self.state == "PLAYING":          self._draw_gameplay()
         elif self.state == "LEVEL_TRANSITION": self._draw_transition()
@@ -725,7 +743,12 @@ class Game:
             fl = pygame.Surface((SCREEN_W, SCREEN_H), pygame.SRCALPHA)
             fl.fill((220, 30, 30, alpha))
             screen.blit(fl, (0, 0))
-
+        # Creating a shaken frame
+        shaken = pygame.Surface((SCREEN_W, SCREEN_H))
+        shaken.blit(screen, (offset_x, offset_y))
+      
+        screen.blit(shaken, (0,0))
+              
         pygame.display.flip()
 
     def _grad(self, r0, g0, b0, r1, g1, b1):
@@ -795,9 +818,15 @@ class Game:
         screen.blit(font_med.render(f"LEVEL  {lvl.number} / 5", True, C_ACCENT), (18, 14))
         screen.blit(font_small.render(f"Attempts: {self.attempts}", True, C_TEXT), (18, 50))
 
+        best = self.best_times[self.level_index]
+        if best is not None:
+          best_text = F"Best: {best:.2F}s"
+        else:
+          best_text = "Best: --"
+        screen.blit(font_small.render(best_text, True, C_GREEN), (18, 68))
+      
         tcol = C_RED if remaining < 8 else (C_ORANGE if remaining < 15 else C_TEXT)
-        screen.blit(font_small.render(f"TIME: {remaining:.1f}s", True, tcol), (185, 50))
-
+        screen.blit(font_small.render(f"TIME: {remaining:.1f}s", True, tcol), (185, 50)
         # Countdown bar below HUD panel
         bmax = hud.w - 8
         bw   = int(bmax * (remaining / lvl.time_limit))

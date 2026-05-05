@@ -167,10 +167,10 @@ class PlayerCar:
 
     def get_rect(self):
       shrink = 10
-        return pygame.Rect(int(self.x - self.WIDTH  // 2),
-                           int(self.y - self.HEIGHT // 2),
-                           self.WIDTH - shrink
-                           self.HEIGHT - shrink)
+      return pygame.Rect(int(self.x - self.WIDTH  // 2),
+                          int(self.y - self.HEIGHT // 2),
+                          self.WIDTH - shrink
+                          self.HEIGHT - shrink)
 
     def draw(self, surf):
         """

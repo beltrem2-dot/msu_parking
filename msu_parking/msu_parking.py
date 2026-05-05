@@ -670,7 +670,7 @@ class Game:
         if best is None or current_time < best:
           self.best_times[self.level_index] = current_time
         
-          self.level_index += 1
+        self.level_index += 1
         if self.level_index >= len(self.levels):
             self.state = "WIN"
         else:
@@ -696,7 +696,7 @@ class Game:
                 self.start_level()
         self.crash_flash = max(0.0, self.crash_flash - dt)
 
-        self.screen_shake = max(0, self.screen_shale - dt * 20)
+        self.screen_shake = max(0, self.screen_shake - dt * 20)
 
     def _update_playing(self, dt, keys):
         lvl       = self.current_level
@@ -728,7 +728,7 @@ class Game:
         screen.fill(C_BG)
         # Screen Shake
         offset_x = int(random.uniform(-self.screen_shake, self.screen_shake))
-        offset_y = int(randome.uniform(-self.screen_shake, self.screen_shake))
+        offset_y = int(random.uniform(-self.screen_shake, self.screen_shake))
       
         if   self.state == "START":            self._draw_start()
         elif self.state == "PLAYING":          self._draw_gameplay()
@@ -826,7 +826,7 @@ class Game:
         screen.blit(font_small.render(best_text, True, C_GREEN), (18, 68))
       
         tcol = C_RED if remaining < 8 else (C_ORANGE if remaining < 15 else C_TEXT)
-        screen.blit(font_small.render(f"TIME: {remaining:.1f}s", True, tcol), (185, 50)
+        screen.blit(font_small.render(f"TIME: {remaining:.1f}s", True, tcol), (185, 50))
         # Countdown bar below HUD panel
         bmax = hud.w - 8
         bw   = int(bmax * (remaining / lvl.time_limit))

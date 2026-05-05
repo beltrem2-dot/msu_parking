@@ -665,12 +665,12 @@ class Game:
     def next_level(self):
         SFX_WIN.play()
         current_time = self.elapsed
-      best = self.best_times[self.level_index]
+        best = self.best_times[self.level_index]
 
-      if best is None or current_time < best:
-        self.best_times[self.level_index] = current_time
+        if best is None or current_time < best:
+          self.best_times[self.level_index] = current_time
         
-        self.level_index += 1
+          self.level_index += 1
         if self.level_index >= len(self.levels):
             self.state = "WIN"
         else:
